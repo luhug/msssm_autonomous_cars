@@ -1,0 +1,170 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>simulate3</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-12-18"><meta name="DC.source" content="simulate3.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#3">Parameter definition</a></li><li><a href="#4">Calculation</a></li><li><a href="#5">Evaluation</a></li><li><a href="#6">Plot</a></li></ul></div><pre class="codeinput"><span class="comment">%Runs the simulation with a certain guide car frequency, randomly</span>
+<span class="comment">%distributed.</span>
+<span class="keyword">function</span> [res1,res2] = simulate3(freq,disMatrix)
+</pre><pre class="codeinput"><span class="comment">%@param freq The chance of a car being a guide car</span>
+<span class="comment">%@param dis 1:With disturbance 0:Without disturbance</span>
+<span class="comment">%PRE: 0&lt;=freq&lt;=1</span>
+</pre><h2 id="3">Parameter definition</h2><pre class="codeinput"><span class="comment">%Simulation Parameters</span>
+Ttot = 10000; <span class="comment">%Total simultaion time</span>
+Ncars = 1013;
+</pre><h2 id="4">Calculation</h2><pre class="codeinput">x0 = zeros(2*Ncars,1);
+
+<span class="keyword">for</span> ii = 1:Ncars
+   x0(ii) = 8*(Ncars-ii); <span class="comment">%Starting Position [m]</span>
+   x0(ii+Ncars) = 29; <span class="comment">%Starting Velocity [m/s]</span>
+<span class="keyword">end</span>
+
+guideMap = (rand(Ncars,1) &lt; freq); <span class="comment">%randomly introduce guide cars</span>
+
+f = @(t,x) idm_final(t,x,guideMap,disMatrix,100); <span class="comment">%map which of the cars are guide cars</span>
+
+[TOUT,YOUT] = ode45(f,[0 Ttot],x0);
+</pre><h2 id="5">Evaluation</h2><pre class="codeinput"><span class="comment">%In this section we extract critical values for measuring the car</span>
+<span class="comment">%throughput</span>
+[ycol, yrow] = size(YOUT);
+measurement = zeros(3,3);
+taken = zeros(3,3);
+<span class="keyword">for</span> ii = 1:ycol
+     <span class="keyword">if</span> YOUT(ii,5) &gt; 160000 &amp;&amp; taken(2,3) == 0
+         measurement(2,3) = TOUT(ii);
+         taken(2,3) = 1;
+     <span class="keyword">end</span>
+     <span class="keyword">if</span> YOUT(ii,1013) &gt; 160000 &amp;&amp; taken(3,3) == 0
+         measurement(3,3) = TOUT(ii);
+         taken(3,3) = 1;
+     <span class="keyword">end</span>
+
+<span class="keyword">end</span>
+
+res1 = measurement(3,3);
+res2 = measurement(2,3);
+</pre><h2 id="6">Plot</h2><pre class="codeinput">ColorMap = [guideMap zeros(Ncars,1) ~guideMap]; <span class="comment">%color guide cars red, normal cars blue</span>
+set(gca, <span class="string">'ColorOrder'</span>, ColorMap, <span class="string">'NextPlot'</span>, <span class="string">'replacechildren'</span>);
+plot(TOUT,YOUT(:,1:Ncars));
+title(<span class="string">'Position over Time'</span>);
+</pre><pre class="codeinput"><span class="keyword">end</span>
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%Runs the simulation with a certain guide car frequency, randomly
+%distributed.
+function [res1,res2] = simulate3(freq,disMatrix)
+%@param freq The chance of a car being a guide car
+%@param dis 1:With disturbance 0:Without disturbance
+%PRE: 0<=freq<=1
+%% Parameter definition
+%Simulation Parameters
+Ttot = 10000; %Total simultaion time
+Ncars = 1013;
+
+%% Calculation
+x0 = zeros(2*Ncars,1);
+
+for ii = 1:Ncars
+   x0(ii) = 8*(Ncars-ii); %Starting Position [m]
+   x0(ii+Ncars) = 29; %Starting Velocity [m/s]
+end
+
+guideMap = (rand(Ncars,1) < freq); %randomly introduce guide cars
+
+f = @(t,x) idm_final(t,x,guideMap,disMatrix,100); %map which of the cars are guide cars
+
+[TOUT,YOUT] = ode45(f,[0 Ttot],x0);
+
+%% Evaluation
+
+%In this section we extract critical values for measuring the car
+%throughput
+[ycol, yrow] = size(YOUT);
+measurement = zeros(3,3); 
+taken = zeros(3,3);
+for ii = 1:ycol
+     if YOUT(ii,5) > 160000 && taken(2,3) == 0
+         measurement(2,3) = TOUT(ii);
+         taken(2,3) = 1;
+     end
+     if YOUT(ii,1013) > 160000 && taken(3,3) == 0
+         measurement(3,3) = TOUT(ii);
+         taken(3,3) = 1;
+     end
+
+end
+
+res1 = measurement(3,3);
+res2 = measurement(2,3);
+
+%% Plot
+ColorMap = [guideMap zeros(Ncars,1) ~guideMap]; %color guide cars red, normal cars blue
+set(gca, 'ColorOrder', ColorMap, 'NextPlot', 'replacechildren');
+plot(TOUT,YOUT(:,1:Ncars));
+title('Position over Time');
+end
+##### SOURCE END #####
+--></body></html>

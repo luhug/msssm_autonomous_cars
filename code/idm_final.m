@@ -1,6 +1,7 @@
 function result = idm_final(t,x,guideMap,disMatrix,triggerDis)
 %IDM function used in simulate.m
 
+%% Parameter definitions
 %Simulation Parameters
 L = 1000000; %Length of the highway in m
 lcar = 0; %Length of the cars in m
@@ -14,14 +15,12 @@ delta = 4; %exponent used in equation
 sStar = @(va,dva,dva1) s0 + va*T + va*dva/2/sqrt(a*b); %influence of the following car
 v0=30; %Max. speed
 
+%% Memory Allocation
 result = zeros(length(x),1);
 Ncars = floor(length(x)/2);
 
+%% Application of different models
 for ii = 1:Ncars
-
-
-
-
     if ii > 1 %All but first car
         dva = (x(ii+Ncars) - x(ii-1 + Ncars));
 
