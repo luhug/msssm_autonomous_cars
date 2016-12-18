@@ -1,33 +1,31 @@
 %Runs the simulation with a certain guide car frequency, randomly
 %distributed.
-function [res1,res2] = simulate(freq,disMatrix)
+function [res1,res2] = simulate3(freq,disMatrix)
 %@param freq The chance of a car being a guide car
 %@param dis 1:With disturbance 0:Without disturbance
 %PRE: 0<=freq<=1
 
 %Simulation Parameters
-Ttot = 4000; %Total simultaion time
-Ncars = 105;
+Ttot = 10000; %Total simultaion time
+Ncars = 1013;
 
 x0 = zeros(2*Ncars,1);
 %startTimes = zeros(Ncars,1);
 
 for ii = 1:Ncars
    x0(ii) = 8*(Ncars-ii); %Starting Position [m]
-   x0(ii+Ncars) = 29;% + rand(1)*19; %Starting Velocity [m/s]
-
- %  startTimes(ii) = 1.7*ii; %Start Time
+   x0(ii+Ncars) = 29;
 end
 
 guideMap = (rand(Ncars,1) < freq); %randomly introduce guide cars
 
 
     %disMatrix = generateDis(pDis,Ncars);
-    f = @(t,x) idm_final(t,x,guideMap,disMatrix); %map which of the cars are guide cars
+    f = @(t,x) idm_final(t,x,guideMap,disMatrix,100); %map which of the cars are guide cars
 
 %find(guideMap)
 [TOUT,YOUT] = ode45(f,[0 Ttot],x0);
-%subplot(1,2,1);
+
 [ycol, yrow] = size(YOUT);
 
 %In this section we extract critical values for measuring the car
@@ -35,50 +33,16 @@ guideMap = (rand(Ncars,1) < freq); %randomly introduce guide cars
 measurement = zeros(3,3); 
 taken = zeros(3,3);
 for ii = 1:ycol
-     if YOUT(ii,1) > 5000 && taken(1,1) == 0
-         measurement(1,1) = TOUT(ii);
-         taken(1,1) = 1;
-     end
-     if YOUT(ii,5) > 5000 && taken(2,1) == 0
-         measurement(2,1) = TOUT(ii);
-         taken(2,1) = 1;
-     end
-     if YOUT(ii,103) > 5000 && taken(3,1) == 0
-         measurement(3,1) = TOUT(ii);
-         taken(3,1) = 1;
-     end
-     if YOUT(ii,1) > 13000 && taken(1,2) == 0
-         measurement(1,2) = TOUT(ii);
-         taken(1,2) = 1;
-     end
-     if YOUT(ii,5) > 13000 && taken(2,2) == 0
-         measurement(2,2) = TOUT(ii);
-         taken(2,2) = 1;
-     end
-     if YOUT(ii,105) > 13000 && taken(3,2) == 0
-         measurement(3,2) = TOUT(ii);
-         taken(3,2) = 1;
-     end
-     if YOUT(ii,1) > 20000 && taken(1,3) == 0
-         measurement(1,3) = TOUT(ii);
-         taken(1,3) = 1;
-     end
-     if YOUT(ii,5) > 10000 && taken(2,3) == 0
+     if YOUT(ii,5) > 160000 && taken(2,3) == 0
          measurement(2,3) = TOUT(ii);
          taken(2,3) = 1;
      end
-     if YOUT(ii,105) > 10000 && taken(3,3) == 0
+     if YOUT(ii,1013) > 160000 && taken(3,3) == 0
          measurement(3,3) = TOUT(ii);
          taken(3,3) = 1;
      end
 
 end
-% abstand = [measurement(2,1)-measurement(1,1), ...
-%            measurement(3,1)-measurement(2,1);
-%            measurement(2,2)-measurement(1,2), ...
-%            measurement(3,2)-measurement(2,2);
-%            measurement(2,3)-measurement(1,3), ...
-%            measurement(3,3)-measurement(2,3)] 
 
 res1 = measurement(3,3);
 res2 = measurement(2,3);
